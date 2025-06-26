@@ -1,15 +1,14 @@
-# Kind-optimized version of customer configuration
-# Based on customer's values.yaml with adjustments for Kind cluster testing
+# Kind-optimized version matching customer's core Kyverno configuration
+# Based on customer's values.yaml with infrastructure settings removed for Kind testing
 
-# Global settings
+# Global settings - keep minimal for Kind
 global:
   image:
     registry: ~  # Use default registries
 
-# Custom labels (required by templates)
+# Required template configurations
 customLabels: {}
 
-# Test configuration
 test:
   image:
     registry: ~
@@ -20,11 +19,10 @@ test:
   securityContext: {}
   sleep: 30
 
-# Templating configuration
 templating:
   enabled: false
 
-# CRDs configuration - KEEP CUSTOMER'S EXACT SETTINGS
+# CRDs configuration - EXACT MATCH to customer's settings
 crds:
   install: true
   groups:
@@ -36,7 +34,7 @@ crds:
       policies: true
       policyexceptions: true
       updaterequests: true
-    # CUSTOMER'S CRD EXCLUSIONS - KEEP AS IS
+    # CUSTOMER'S EXACT CRD EXCLUSIONS
     reports:
       clusterephemeralreports: false
       ephemeralreports: false
@@ -46,7 +44,7 @@ crds:
   reportsServer:
     enabled: true
 
-# Configuration - Keep customer's exact settings
+# Configuration - EXACT MATCH to customer's settings
 config:
   create: true
   excludeGroups:
@@ -57,146 +55,7 @@ config:
     - '[*/*,kube-public,*]'
     - '[*/*,kube-node-lease,*]'
 
-# Admission controller - Reduce resources for Kind
-admissionController:
-  replicas: 1  # Reduce for Kind
-  container:
-    image:
-      pullPolicy: IfNotPresent
-  resources:
-    limits:
-      cpu: 500m      # REDUCED from 1500m
-      memory: 512Mi  # REDUCED from 2048Mi
-    requests:
-      cpu: 100m      # REDUCED from 1000m
-      memory: 64Mi   # REDUCED from 128Mi
-  # REMOVE: priorityClassName for Kind
-  priorityClassName: ""
-  # Add missing metricsService configuration
-  metricsService:
-    create: true
-    port: 8000
-    type: ClusterIP
-  # Add missing service configuration
-  service:
-    port: 443
-    type: ClusterIP
-  # Add missing serviceMonitor configuration
-  serviceMonitor:
-    enabled: false
-
-# Background controller - Reduce resources for Kind
-backgroundController:
-  enabled: true
-  replicas: 1  # Reduce for Kind
-  resources:
-    limits:
-      cpu: 500m      # REDUCED from 1500m
-      memory: 512Mi  # REDUCED from 2048Mi
-    requests:
-      cpu: 50m       # REDUCED from 100m
-      memory: 32Mi   # REDUCED from 64Mi
-  # REMOVE: priorityClassName for Kind
-  priorityClassName: ""
-  # Add missing metricsService configuration
-  metricsService:
-    create: true
-    port: 8000
-    type: ClusterIP
-  # Add missing service configuration
-  service:
-    port: 8080
-    type: ClusterIP
-  # Add missing serviceMonitor configuration
-  serviceMonitor:
-    enabled: false
-
-# Cleanup controller - Reduce resources for Kind
-cleanupController:
-  enabled: true
-  replicas: 1  # Reduce for Kind
-  resources:
-    limits:
-      cpu: 500m      # REDUCED from 1000m
-      memory: 256Mi  # REDUCED from 1024Mi
-    requests:
-      cpu: 50m       # REDUCED from 100m
-      memory: 32Mi   # REDUCED from 64Mi
-  # REMOVE: priorityClassName for Kind
-  priorityClassName: ""
-  # Add missing metricsService configuration
-  metricsService:
-    create: true
-    port: 8000
-    type: ClusterIP
-  # Add missing service configuration
-  service:
-    port: 9443
-    type: ClusterIP
-  # Add missing serviceMonitor configuration
-  serviceMonitor:
-    enabled: false
-
-# Reports controller - KEEP CUSTOMER'S EXACT SANITY CHECK SETTINGS
-reportsController:
-  enabled: true
-  # CRITICAL: Keep customer's exact setting
-  sanityChecks: false  # THIS IS THE KEY SETTING WE'RE TESTING
-  replicas: 1  # Reduce for Kind
-  resources:
-    limits:
-      cpu: 500m      # REDUCED from 2000m
-      memory: 512Mi  # REDUCED from 2048Mi
-    requests:
-      cpu: 50m       # REDUCED from 100m
-      memory: 32Mi   # REDUCED from 64Mi
-  # REMOVE: priorityClassName for Kind
-  priorityClassName: ""
-  # Add missing metricsService configuration
-  metricsService:
-    create: true
-    port: 8000
-    type: ClusterIP
-  # Add missing service configuration
-  service:
-    port: 443
-    type: ClusterIP
-  # Add missing serviceMonitor configuration
-  serviceMonitor:
-    enabled: false
-
-# Reports server - Optimize for Kind
-reports-server:
-  enabled: true
-  replicaCount: 1
-  # REMOVE: priorityClassName for Kind
-  priorityClassName: ""
-  resources:
-    limits:
-      cpu: 500m      # REDUCED from 1500m
-      memory: 512Mi  # REDUCED from 2048Mi
-    requests:
-      cpu: 100m      # REDUCED from 1000m
-      memory: 128Mi  # REDUCED from 1024Mi
-      
-  config:
-    etcd:
-      enabled: true
-      storage: 1Gi     # REDUCED from 8Gi for Kind
-      quotaBackendBytes: 1073741824  # REDUCED from 8GB to 1GB
-    db:
-      host: reports-server-cluster-rw.reports-server
-      name: reportsdb
-      user: app
-      password: password
-      sslmode: disable
-
-  # DISABLE: CloudNativePG CRDs to avoid conflicts
-  cloudnative-pg:
-    crds:
-      create: false
-
-# Features - Keep customer's exact settings
+# Features - EXACT MATCH to customer's settings
 features:
   admissionReports:
     enabled: true
@@ -211,10 +70,141 @@ features:
     imageVerify: true
     generate: true
 
-# DISABLE: Resource-intensive features for Kind
+# Admission controller - Kind optimized but keeping core config
+admissionController:
+  rbac:
+    create: true
+  replicas: 1  # Reduced for Kind
+  resources:
+    limits:
+      cpu: 500m      # Reduced for Kind
+      memory: 512Mi  # Reduced for Kind
+    requests:
+      cpu: 100m      # Reduced for Kind
+      memory: 64Mi   # Reduced for Kind
+  priorityClassName: ""  # Remove for Kind
+  service:
+    port: 443
+    type: ClusterIP
+  metricsService:
+    create: true
+    port: 8000
+    type: ClusterIP
+  serviceMonitor:
+    enabled: false
+  rbac:
+    create: true
+
+# Background controller - Kind optimized but keeping core config
+backgroundController:
+  enabled: true
+  rbac:
+    create: true
+  replicas: 1  # Reduced for Kind
+  resources:
+    limits:
+      cpu: 500m      # Reduced for Kind
+      memory: 512Mi  # Reduced for Kind
+    requests:
+      cpu: 50m       # Reduced for Kind
+      memory: 32Mi   # Reduced for Kind
+  priorityClassName: ""  # Remove for Kind
+  service:
+    port: 8080
+    type: ClusterIP
+  metricsService:
+    create: true
+    port: 8000
+    type: ClusterIP
+  serviceMonitor:
+    enabled: false
+  rbac:
+    create: true
+
+# Cleanup controller - Kind optimized but keeping core config
+cleanupController:
+  enabled: true
+  rbac:
+    create: true
+  replicas: 1  # Reduced for Kind
+  resources:
+    limits:
+      cpu: 500m      # Reduced for Kind
+      memory: 256Mi  # Reduced for Kind
+    requests:
+      cpu: 50m       # Reduced for Kind
+      memory: 32Mi   # Reduced for Kind
+  priorityClassName: ""  # Remove for Kind
+  service:
+    port: 9443
+    type: ClusterIP
+  metricsService:
+    create: true
+    port: 8000
+    type: ClusterIP
+  serviceMonitor:
+    enabled: false
+  rbac:
+    create: true
+
+# Reports controller - EXACT MATCH to customer's critical setting
+reportsController:
+  enabled: true
+  # CRITICAL: Customer's exact sanity check setting - THE KEY CONFIGURATION WE'RE TESTING
+  sanityChecks: false
+  rbac:
+    create: true
+  replicas: 1  # Reduced for Kind
+  resources:
+    limits:
+      cpu: 500m      # Reduced for Kind
+      memory: 512Mi  # Reduced for Kind
+    requests:
+      cpu: 50m       # Reduced for Kind
+      memory: 32Mi   # Reduced for Kind
+  priorityClassName: ""  # Remove for Kind
+  service:
+    port: 443
+    type: ClusterIP
+  metricsService:
+    create: true
+    port: 8000
+    type: ClusterIP
+  serviceMonitor:
+    enabled: false
+  rbac:
+    create: true
+
+# Reports server - EXACT MATCH to customer's settings but Kind optimized
+reports-server:
+  enabled: true
+  replicaCount: 1
+  priorityClassName: ""  # Remove for Kind
+  resources:
+    limits:
+      cpu: 500m      # Reduced for Kind
+      memory: 512Mi  # Reduced for Kind
+    requests:
+      cpu: 100m      # Reduced for Kind
+      memory: 128Mi  # Reduced for Kind
+  config:
+    etcd:
+      enabled: true
+      storage: 1Gi     # Reduced for Kind
+      quotaBackendBytes: 1073741824  # 1GB for Kind
+    db:
+      host: reports-server-cluster-rw.reports-server
+      name: reportsdb
+      user: app
+      password: password
+      sslmode: disable
+  cloudnative-pg:
+    crds:
+      create: false
+
+# Disable resource-intensive features for Kind
 grafana:
   enabled: false
 
-# Network policies - Disable for Kind simplicity
 networkPolicy:
   enabled: false 
