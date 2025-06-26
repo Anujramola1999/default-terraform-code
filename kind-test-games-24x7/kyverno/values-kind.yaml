@@ -51,6 +51,11 @@ admissionController:
       memory: 64Mi   # REDUCED from 128Mi
   # REMOVE: priorityClassName for Kind
   priorityClassName: ""
+  # Add missing metricsService configuration
+  metricsService:
+    create: true
+    port: 8000
+    type: ClusterIP
 
 # Background controller - Reduce resources for Kind
 backgroundController:
@@ -65,6 +70,11 @@ backgroundController:
       memory: 32Mi   # REDUCED from 64Mi
   # REMOVE: priorityClassName for Kind
   priorityClassName: ""
+  # Add missing metricsService configuration
+  metricsService:
+    create: true
+    port: 8000
+    type: ClusterIP
 
 # Cleanup controller - Reduce resources for Kind
 cleanupController:
@@ -79,6 +89,11 @@ cleanupController:
       memory: 32Mi   # REDUCED from 64Mi
   # REMOVE: priorityClassName for Kind
   priorityClassName: ""
+  # Add missing metricsService configuration
+  metricsService:
+    create: true
+    port: 8000
+    type: ClusterIP
 
 # Reports controller - KEEP CUSTOMER'S EXACT SANITY CHECK SETTINGS
 reportsController:
@@ -95,6 +110,11 @@ reportsController:
       memory: 32Mi   # REDUCED from 64Mi
   # REMOVE: priorityClassName for Kind
   priorityClassName: ""
+  # Add missing metricsService configuration
+  metricsService:
+    create: true
+    port: 8000
+    type: ClusterIP
 
 # Reports server - Optimize for Kind
 reports-server:
@@ -147,15 +167,5 @@ grafana:
   enabled: false
 
 # Network policies - Disable for Kind simplicity
-admissionController:
-  networkPolicy:
-    enabled: false
-backgroundController:
-  networkPolicy:
-    enabled: false
-cleanupController:
-  networkPolicy:
-    enabled: false
-reportsController:
-  networkPolicy:
-    enabled: false 
+networkPolicy:
+  enabled: false 
