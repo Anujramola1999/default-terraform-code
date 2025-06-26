@@ -1,28 +1,37 @@
 # Kind-optimized version matching customer's core Kyverno configuration
-# Based on customer's values.yaml with infrastructure settings removed for Kind testing
+# Based on newer chart structure with customer's critical settings preserved
 
-# Global settings - keep minimal for Kind
+# Internal settings
+templating:
+  enabled: false
+  debug: false
+  version: ~
+
+# Global settings - minimal for Kind
 global:
   image:
-    registry: ~  # Use default registries
+    registry: ~
+  imagePullSecrets: []
+  resyncPeriod: 15m
+  crdWatcher: false
+  caCertificates:
+    data: ~
+    volume: {}
+  extraEnvVars: []
+  nodeSelector: {}
+  tolerations: []
 
 # Required template configurations
 customLabels: {}
 
-test:
-  image:
-    registry: ~
-    repository: busybox
-    tag: latest
-    pullPolicy: IfNotPresent
-  resources: {}
-  securityContext: {}
-  sleep: 30
+# RBAC settings
+rbac:
+  roles:
+    aggregate:
+      admin: true
+      view: true
 
-templating:
-  enabled: false
-
-# CRDs configuration - EXACT MATCH to customer's settings
+# CRDs configuration - CUSTOMER'S EXACT SETTINGS
 crds:
   install: true
   groups:
@@ -34,17 +43,23 @@ crds:
       policies: true
       policyexceptions: true
       updaterequests: true
-    # CUSTOMER'S EXACT CRD EXCLUSIONS
+      validatingpolicies: true
+    policies:
+      validatingpolicies: true
+      policyexceptions: true
+      imagevalidatingpolicies: true
+    # CUSTOMER'S CRITICAL CRD EXCLUSIONS - KEEP AS FALSE
     reports:
       clusterephemeralreports: false
       ephemeralreports: false
     wgpolicyk8s:
       clusterpolicyreports: false
       policyreports: false
+  # CUSTOMER'S CRITICAL SETTING - EXTERNAL REPORTS SERVER
   reportsServer:
     enabled: true
 
-# Configuration - EXACT MATCH to customer's settings
+# Configuration - customer's core settings
 config:
   create: true
   excludeGroups:
@@ -55,7 +70,7 @@ config:
     - '[*/*,kube-public,*]'
     - '[*/*,kube-node-lease,*]'
 
-# Features - EXACT MATCH to customer's settings
+# Features - customer's settings
 features:
   admissionReports:
     enabled: true
@@ -63,25 +78,68 @@ features:
     enabled: true
   policyReports:
     enabled: true
+  validatingAdmissionPolicyReports:
+    enabled: false
   reporting:
     validate: true
     mutate: true
     mutateExisting: true
     imageVerify: true
     generate: true
+  autoUpdateWebhooks:
+    enabled: true
+  backgroundScan:
+    enabled: true
+    backgroundScanWorkers: 2
+    backgroundScanInterval: 1h
+    skipResourceFilters: true
+  configMapCaching:
+    enabled: true
+  controllerRuntimeMetrics:
+    bindAddress: :8080
+  deferredLoading:
+    enabled: true
+  policyExceptions:
+    enabled: false
+    namespace: ''
+  logging:
+    format: text
+    verbosity: 2
+  omitEvents:
+    eventTypes:
+      - PolicyApplied
+      - PolicySkipped
 
-# Admission controller - Kind optimized but keeping core config
+# Test configuration
+test:
+  sleep: 20
+  image:
+    registry: ~
+    repository: busybox
+    tag: '1.35'
+    pullPolicy: ~
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 10m
+      memory: 64Mi
+
+# Admission controller - Kind optimized
 admissionController:
   rbac:
     create: true
   replicas: 1  # Reduced for Kind
-  resources:
-    limits:
-      cpu: 500m      # Reduced for Kind
-      memory: 512Mi  # Reduced for Kind
-    requests:
-      cpu: 100m      # Reduced for Kind
-      memory: 64Mi   # Reduced for Kind
+  container:
+    image:
+      pullPolicy: IfNotPresent
+    resources:
+      limits:
+        memory: 384Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
   priorityClassName: ""  # Remove for Kind
   service:
     port: 443
@@ -92,76 +150,43 @@ admissionController:
     type: ClusterIP
   serviceMonitor:
     enabled: false
-  rbac:
-    create: true
 
-# Background controller - Kind optimized but keeping core config
+# Background controller - Kind optimized
 backgroundController:
   enabled: true
   rbac:
     create: true
   replicas: 1  # Reduced for Kind
+  image:
+    pullPolicy: IfNotPresent
   resources:
     limits:
-      cpu: 500m      # Reduced for Kind
-      memory: 512Mi  # Reduced for Kind
+      memory: 128Mi
     requests:
-      cpu: 50m       # Reduced for Kind
-      memory: 32Mi   # Reduced for Kind
+      cpu: 100m
+      memory: 64Mi
   priorityClassName: ""  # Remove for Kind
-  service:
-    port: 8080
-    type: ClusterIP
   metricsService:
     create: true
     port: 8000
     type: ClusterIP
   serviceMonitor:
     enabled: false
-  rbac:
-    create: true
 
-# Cleanup controller - Kind optimized but keeping core config
+# Cleanup controller - Kind optimized
 cleanupController:
   enabled: true
   rbac:
     create: true
   replicas: 1  # Reduced for Kind
+  image:
+    pullPolicy: IfNotPresent
   resources:
     limits:
-      cpu: 500m      # Reduced for Kind
-      memory: 256Mi  # Reduced for Kind
+      memory: 128Mi
     requests:
-      cpu: 50m       # Reduced for Kind
-      memory: 32Mi   # Reduced for Kind
-  priorityClassName: ""  # Remove for Kind
-  service:
-    port: 9443
-    type: ClusterIP
-  metricsService:
-    create: true
-    port: 8000
-    type: ClusterIP
-  serviceMonitor:
-    enabled: false
-  rbac:
-    create: true
-
-# Reports controller - EXACT MATCH to customer's critical setting
-reportsController:
-  enabled: true
-  # CRITICAL: Customer's exact sanity check setting - THE KEY CONFIGURATION WE'RE TESTING
-  sanityChecks: false
-  rbac:
-    create: true
-  replicas: 1  # Reduced for Kind
-  resources:
-    limits:
-      cpu: 500m      # Reduced for Kind
-      memory: 512Mi  # Reduced for Kind
-    requests:
-      cpu: 50m       # Reduced for Kind
-      memory: 32Mi   # Reduced for Kind
+      cpu: 100m
+      memory: 64Mi
   priorityClassName: ""  # Remove for Kind
   service:
     port: 443
@@ -172,13 +197,47 @@ reportsController:
     type: ClusterIP
   serviceMonitor:
     enabled: false
+
+# Reports controller - CUSTOMER'S CRITICAL SETTING
+reportsController:
+  enabled: true
+  # CRITICAL: Customer's exact sanity check setting - THE KEY BUG WE'RE TESTING
+  sanityChecks: false
   rbac:
     create: true
+  replicas: 1  # Reduced for Kind
+  image:
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 64Mi
+  priorityClassName: ""  # Remove for Kind
+  metricsService:
+    create: true
+    port: 8000
+    type: ClusterIP
+  serviceMonitor:
+    enabled: false
 
-# Reports server - EXACT MATCH to customer's settings but Kind optimized
+# Reports server - CUSTOMER'S EXACT SETTING WITH KIND OPTIMIZATIONS
 reports-server:
-  enabled: true
+  enabled: true  # CUSTOMER'S CRITICAL SETTING
+  fipsEnabled: false
+  templating:
+    enabled: false
+  cloudnative-pg:
+    crds:
+      create: false
+  postgresql:
+    enabled: false
   replicaCount: 1
+  image:
+    registry: reg.nirmata.io
+    repository: nirmata/reports-server
+    pullPolicy: IfNotPresent
   priorityClassName: ""  # Remove for Kind
   resources:
     limits:
@@ -198,9 +257,8 @@ reports-server:
       user: app
       password: password
       sslmode: disable
-  cloudnative-pg:
-    crds:
-      create: false
+  controllerRuntimeMetrics:
+    bindAddress: :8080
 
 # Disable resource-intensive features for Kind
 grafana:
