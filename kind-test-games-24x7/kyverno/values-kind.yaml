@@ -1,0 +1,161 @@
+# Kind-optimized version of customer configuration
+# Based on customer's values.yaml with adjustments for Kind cluster testing
+
+# CRDs configuration - KEEP CUSTOMER'S EXACT SETTINGS
+crds:
+  install: true
+  groups:
+    kyverno:
+      cleanuppolicies: true
+      clustercleanuppolicies: true
+      clusterpolicies: true
+      globalcontextentries: true
+      policies: true
+      policyexceptions: true
+      updaterequests: true
+    # CUSTOMER'S CRD EXCLUSIONS - KEEP AS IS
+    reports:
+      clusterephemeralreports: false
+      ephemeralreports: false
+    wgpolicyk8s:
+      clusterpolicyreports: false
+      policyreports: false
+  reportsServer:
+    enabled: true
+
+# ADJUST: Use public registries for Kind
+global:
+  image:
+    registry: ~  # Use default registries
+
+# Configuration - Keep customer's exact settings
+config:
+  create: true
+  excludeGroups:
+    - system:nodes
+  resourceFilters:
+    - '[Event,*,*]'
+    - '[*/*,kube-system,*]'
+    - '[*/*,kube-public,*]'
+    - '[*/*,kube-node-lease,*]'
+
+# Admission controller - Reduce resources for Kind
+admissionController:
+  replicas: 1  # Reduce for Kind
+  resources:
+    limits:
+      cpu: 500m      # REDUCED from 1500m
+      memory: 512Mi  # REDUCED from 2048Mi
+    requests:
+      cpu: 100m      # REDUCED from 1000m
+      memory: 64Mi   # REDUCED from 128Mi
+  # REMOVE: priorityClassName for Kind
+  priorityClassName: ""
+
+# Background controller - Reduce resources for Kind
+backgroundController:
+  enabled: true
+  replicas: 1  # Reduce for Kind
+  resources:
+    limits:
+      cpu: 500m      # REDUCED from 1500m
+      memory: 512Mi  # REDUCED from 2048Mi
+    requests:
+      cpu: 50m       # REDUCED from 100m
+      memory: 32Mi   # REDUCED from 64Mi
+  # REMOVE: priorityClassName for Kind
+  priorityClassName: ""
+
+# Cleanup controller - Reduce resources for Kind
+cleanupController:
+  enabled: true
+  replicas: 1  # Reduce for Kind
+  resources:
+    limits:
+      cpu: 500m      # REDUCED from 1000m
+      memory: 256Mi  # REDUCED from 1024Mi
+    requests:
+      cpu: 50m       # REDUCED from 100m
+      memory: 32Mi   # REDUCED from 64Mi
+  # REMOVE: priorityClassName for Kind
+  priorityClassName: ""
+
+# Reports controller - KEEP CUSTOMER'S EXACT SANITY CHECK SETTINGS
+reportsController:
+  enabled: true
+  # CRITICAL: Keep customer's exact setting
+  sanityChecks: false  # THIS IS THE KEY SETTING WE'RE TESTING
+  replicas: 1  # Reduce for Kind
+  resources:
+    limits:
+      cpu: 500m      # REDUCED from 2000m
+      memory: 512Mi  # REDUCED from 2048Mi
+    requests:
+      cpu: 50m       # REDUCED from 100m
+      memory: 32Mi   # REDUCED from 64Mi
+  # REMOVE: priorityClassName for Kind
+  priorityClassName: ""
+
+# Reports server - Optimize for Kind
+reports-server:
+  enabled: true
+  replicaCount: 1
+  # REMOVE: priorityClassName for Kind
+  priorityClassName: ""
+  resources:
+    limits:
+      cpu: 500m      # REDUCED from 1500m
+      memory: 512Mi  # REDUCED from 2048Mi
+    requests:
+      cpu: 100m      # REDUCED from 1000m
+      memory: 128Mi  # REDUCED from 1024Mi
+      
+  config:
+    etcd:
+      enabled: true
+      storage: 1Gi     # REDUCED from 8Gi for Kind
+      quotaBackendBytes: 1073741824  # REDUCED from 8GB to 1GB
+    db:
+      host: reports-server-cluster-rw.reports-server
+      name: reportsdb
+      user: app
+      password: password
+      sslmode: disable
+
+  # DISABLE: CloudNativePG CRDs to avoid conflicts
+  cloudnative-pg:
+    crds:
+      create: false
+
+# Features - Keep customer's exact settings
+features:
+  admissionReports:
+    enabled: true
+  aggregateReports:
+    enabled: true
+  policyReports:
+    enabled: true
+  reporting:
+    validate: true
+    mutate: true
+    mutateExisting: true
+    imageVerify: true
+    generate: true
+
+# DISABLE: Resource-intensive features for Kind
+grafana:
+  enabled: false
+
+# Network policies - Disable for Kind simplicity
+admissionController:
+  networkPolicy:
+    enabled: false
+backgroundController:
+  networkPolicy:
+    enabled: false
+cleanupController:
+  networkPolicy:
+    enabled: false
+reportsController:
+  networkPolicy:
+    enabled: false 
