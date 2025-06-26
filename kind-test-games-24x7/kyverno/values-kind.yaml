@@ -1,6 +1,29 @@
 # Kind-optimized version of customer configuration
 # Based on customer's values.yaml with adjustments for Kind cluster testing
 
+# Global settings
+global:
+  image:
+    registry: ~  # Use default registries
+
+# Custom labels (required by templates)
+customLabels: {}
+
+# Test configuration
+test:
+  image:
+    registry: ~
+    repository: busybox
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources: {}
+  securityContext: {}
+  sleep: 30
+
+# Templating configuration
+templating:
+  enabled: false
+
 # CRDs configuration - KEEP CUSTOMER'S EXACT SETTINGS
 crds:
   install: true
@@ -23,11 +46,6 @@ crds:
   reportsServer:
     enabled: true
 
-# ADJUST: Use public registries for Kind
-global:
-  image:
-    registry: ~  # Use default registries
-
 # Configuration - Keep customer's exact settings
 config:
   create: true
@@ -42,6 +60,9 @@ config:
 # Admission controller - Reduce resources for Kind
 admissionController:
   replicas: 1  # Reduce for Kind
+  container:
+    image:
+      pullPolicy: IfNotPresent
   resources:
     limits:
       cpu: 500m      # REDUCED from 1500m
