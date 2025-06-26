@@ -81,6 +81,9 @@ admissionController:
   service:
     port: 443
     type: ClusterIP
+  # Add missing serviceMonitor configuration
+  serviceMonitor:
+    enabled: false
 
 # Background controller - Reduce resources for Kind
 backgroundController:
@@ -104,6 +107,9 @@ backgroundController:
   service:
     port: 8080
     type: ClusterIP
+  # Add missing serviceMonitor configuration
+  serviceMonitor:
+    enabled: false
 
 # Cleanup controller - Reduce resources for Kind
 cleanupController:
@@ -127,6 +133,9 @@ cleanupController:
   service:
     port: 9443
     type: ClusterIP
+  # Add missing serviceMonitor configuration
+  serviceMonitor:
+    enabled: false
 
 # Reports controller - KEEP CUSTOMER'S EXACT SANITY CHECK SETTINGS
 reportsController:
@@ -152,6 +161,9 @@ reportsController:
   service:
     port: 443
     type: ClusterIP
+  # Add missing serviceMonitor configuration
+  serviceMonitor:
+    enabled: false
 
 # Reports server - Optimize for Kind
 reports-server:
