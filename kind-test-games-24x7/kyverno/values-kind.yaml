@@ -77,6 +77,10 @@ admissionController:
     create: true
     port: 8000
     type: ClusterIP
+  # Add missing service configuration
+  service:
+    port: 443
+    type: ClusterIP
 
 # Background controller - Reduce resources for Kind
 backgroundController:
@@ -96,6 +100,10 @@ backgroundController:
     create: true
     port: 8000
     type: ClusterIP
+  # Add missing service configuration
+  service:
+    port: 8080
+    type: ClusterIP
 
 # Cleanup controller - Reduce resources for Kind
 cleanupController:
@@ -114,6 +122,10 @@ cleanupController:
   metricsService:
     create: true
     port: 8000
+    type: ClusterIP
+  # Add missing service configuration
+  service:
+    port: 9443
     type: ClusterIP
 
 # Reports controller - KEEP CUSTOMER'S EXACT SANITY CHECK SETTINGS
@@ -135,6 +147,10 @@ reportsController:
   metricsService:
     create: true
     port: 8000
+    type: ClusterIP
+  # Add missing service configuration
+  service:
+    port: 443
     type: ClusterIP
 
 # Reports server - Optimize for Kind
