@@ -54,4 +54,4 @@ name: kyverno
 sources:
 - https://github.com/nirmata/enterprise-kyverno
 type: application
-version: 3.3.23
+version: 3.3.24
