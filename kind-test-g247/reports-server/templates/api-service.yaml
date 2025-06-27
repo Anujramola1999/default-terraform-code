@@ -10,6 +10,8 @@ metadata:
     kube-aggregator.kubernetes.io/automanaged: "false"
   annotations:
     helm.sh/hook: post-install
+    argocd.argoproj.io/sync-options: Prune=false
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
 spec:
   group: wgpolicyk8s.io
   groupPriorityMinimum: 100
@@ -32,6 +34,8 @@ metadata:
     kube-aggregator.kubernetes.io/automanaged: "false"
   annotations:
     helm.sh/hook: post-install
+    argocd.argoproj.io/sync-options: Prune=false
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
 spec:
   group: reports.kyverno.io
   groupPriorityMinimum: 100
