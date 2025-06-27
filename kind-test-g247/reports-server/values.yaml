@@ -205,7 +205,7 @@ config:
     storage: 8Gi
     
     # -- Storage class name for etcd PVC (if not set, uses cluster default)
-    storageClassName: "gp2"
+    storageClassName: "gp3"
 
   # Quota for etcd’s internal database (BoltDB) **in bytes**
   # - What it limits: the logical size of the etcd DB file, *not* the PVC.
