@@ -202,12 +202,12 @@ config:
     # - Override: Set a custom storage size (e.g., "2Gi", "5Gi") as needed.
     # - NOTE: keep this **10‑20 % greater** than `quotaBackendBytes`
     # This value defines the size of the persistent volume claim (PVC) for etcd.
-    storage: 2Gi
+    storage: 8Gi
 
   # Quota for etcd’s internal database (BoltDB) **in bytes**
   # - What it limits: the logical size of the etcd DB file, *not* the PVC.
   # - Format: plain integer bytes (no Ki/Mi/Gi suffix).
-    quotaBackendBytes: 1932735283
+    quotaBackendBytes: 8589934592 
 
     ## @param nodeSelector [object] Node labels for pod assignment
     ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
@@ -286,7 +286,7 @@ apiServicesManagement:
   installApiServices:
 
     # -- Store reports in reports-server
-    enabled: false
+    enabled: true
 
     # -- Store ephemeral reports in reports-server
     installEphemeralReportsService: true
