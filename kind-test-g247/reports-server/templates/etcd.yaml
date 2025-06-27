@@ -173,6 +173,9 @@ spec:
       name: etcd-data
     spec:
       accessModes: ["ReadWriteOnce"]
+{{- if .Values.config.etcd.storageClassName }}
+      storageClassName: {{ .Values.config.etcd.storageClassName }}
+{{- end }}
       resources:
         requests:
           storage: {{ .Values.config.etcd.storage | default "1Gi" }}
