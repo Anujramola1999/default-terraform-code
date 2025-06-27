@@ -88,16 +88,16 @@ crds:
 
     # -- Install CRDs in group `reports.kyverno.io`
     reports:
-      clusterephemeralreports: false
-      ephemeralreports: false
+      clusterephemeralreports: true
+      ephemeralreports: true
 
     # -- Install CRDs in group `wgpolicyk8s.io`
     wgpolicyk8s:
-      clusterpolicyreports: false
-      policyreports: false
+      clusterpolicyreports: true
+      policyreports: true
 
   reportsServer:
-    enabled: true
+    enabled: false
 
   # -- Additional CRDs annotations
   annotations: {}
@@ -2080,7 +2080,7 @@ reportsController:
     nodePort:
 
    # -- Enable sanity check for reports CRDs
-  sanityChecks: false
+  sanityChecks: true
 
 
 reports-server:
