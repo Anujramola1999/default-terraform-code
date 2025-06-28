@@ -285,8 +285,8 @@ apiServicesManagement:
   # -- Install api services in manifest
   installApiServices:
 
-    # -- Store reports in reports-server
-    enabled: true
+    # -- Store reports in reports-server (disabled to prevent ArgoCD conflicts)
+    enabled: false
 
     # -- Store ephemeral reports in reports-server
     installEphemeralReportsService: true
