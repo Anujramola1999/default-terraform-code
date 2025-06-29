@@ -111,7 +111,7 @@ crds:
     # -- Install CRDs in group `wgpolicyk8s.io`
     wgpolicyk8s:
       clusterpolicyreports: true
-      policyreports: true 
+      policyreports: true
 
   reportsServer:
     enabled: false
@@ -222,7 +222,7 @@ config:
   enableDefaultRegistryMutation: true
 
   # -- The registry hostname used for the image mutation.
-  defaultRegistry: reg.nirmata.io
+  defaultRegistry: docker.io
 
   # -- Exclude groups
   excludeGroups:
@@ -590,7 +590,7 @@ webhooksCleanup:
       cpu: 10m
       memory: 64Mi
 
-  policyReportsCleanup:
+policyReportsCleanup:
   # -- Create a helm post-upgrade hook to cleanup the old policy reports.
   enabled: true
 
@@ -1060,14 +1060,14 @@ admissionController:
       pullPolicy: ~
 
     resources:
-      # -- Pod resource limits - MINIMIZED FOR KIND
+      # -- Pod resource limits
       limits:
-        cpu: 50m
-        memory: 128Mi
-      # -- Pod resource requests - MINIMIZED FOR KIND
+        cpu: 100m
+        memory: 256Mi
+      # -- Pod resource requests
       requests:
-        cpu: 5m
-        memory: 32Mi
+        cpu: 10m
+        memory: 64Mi
 
     # -- Container security context
     securityContext:
@@ -1106,14 +1106,13 @@ admissionController:
       pullPolicy: IfNotPresent
 
     resources:
-      # -- Pod resource limits - MINIMIZED FOR KIND
+      # -- Pod resource limits
       limits:
-        cpu: 100m
-        memory: 256Mi
-      # -- Pod resource requests - MINIMIZED FOR KIND
+        memory: 384Mi
+      # -- Pod resource requests
       requests:
-        cpu: 25m
-        memory: 64Mi
+        cpu: 100m
+        memory: 128Mi
 
     # -- Container security context
     securityContext:
