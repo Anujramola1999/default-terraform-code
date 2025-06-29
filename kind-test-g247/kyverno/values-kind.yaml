@@ -689,10 +689,10 @@ grafana:
 features:
   admissionReports:
     # -- Enables the feature
-    enabled: false
+    enabled: true
   aggregateReports:
     # -- Enables the feature
-    enabled: false
+    enabled: true
   policyReports:
     # -- Enables the feature
     enabled: true
