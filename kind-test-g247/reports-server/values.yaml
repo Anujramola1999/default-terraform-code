@@ -286,7 +286,7 @@ apiServicesManagement:
   installApiServices:
 
     # -- Store reports in reports-server (disabled to prevent ArgoCD conflicts)
-    enabled: false
+    enabled: true
 
     # -- Store ephemeral reports in reports-server
     installEphemeralReportsService: true
