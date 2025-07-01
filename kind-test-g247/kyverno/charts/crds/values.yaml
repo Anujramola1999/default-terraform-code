@@ -5,13 +5,11 @@ templating:
   debug: false
   version: ~
 
-
 reportsServer:
     # -- Kyverno reports-server is used in your cluster
-  enabled: true
+  enabled: false
 
 groups:
-
   # -- Install CRDs in group `kyverno.io`
   # -- This field can be overwritten by setting crds.labels in the parent chart
   kyverno:
@@ -24,16 +22,21 @@ groups:
     updaterequests: true
 
   # -- Install CRDs in group `reports.kyverno.io`
+  policies:
+    validatingpolicies: true
+    imagevalidatingpolicies: true
+    policyexceptions: true
+
   # -- This field can be overwritten by setting crds.labels in the parent chart
   reports:
-    clusterephemeralreports: false
-    ephemeralreports: false
+    clusterephemeralreports: true
+    ephemeralreports: true
 
   # -- Install CRDs in group `wgpolicyk8s.io`
   # -- This field can be overwritten by setting crds.labels in the parent chart
   wgpolicyk8s:
-    clusterpolicyreports: false
-    policyreports: false
+    clusterpolicyreports: true
+    policyreports: true
 
 # -- Additional CRDs annotations
 # -- This field can be overwritten by setting crds.annotations in the parent chart
