@@ -58,4 +58,4 @@ name: kyverno
 sources:
 - https://github.com/nirmata/enterprise-kyverno
 type: application
-version: 3.4.1
+version: 3.4.2-rc1
