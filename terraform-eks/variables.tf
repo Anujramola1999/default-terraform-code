@@ -106,6 +106,7 @@ variable "common_tags" {
   default = {
     Environment = "dev"
     ManagedBy   = "terraform"
+    DoNotDelete = "true"
   }
 }
 
